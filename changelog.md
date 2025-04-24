@@ -1,3 +1,17 @@
+# [8.0.0](https://github.com/TehShrike/abstract-state-router/releases/tag/v8.8.0)
+
+- drop callbacks, everything is promises now [#162](https://github.com/TehShrike/abstract-state-router/pull/162)
+- drop CJS, use ESM everywhere [#166](https://github.com/TehShrike/abstract-state-router/pull/166)
+- added TypeScript types
+
+# [7.7.1](https://github.com/TehShrike/abstract-state-router/releases/tag/v7.7.1)
+
+- Fixed lying changelog
+
+# [7.7.0](https://github.com/TehShrike/abstract-state-router/releases/tag/v7.7.0)
+
+- Accidentally published this new version because I wasn't paying attention to branch names when I merged a PR.  No real changes occurred
+
 # [7.6.0](https://github.com/TehShrike/abstract-state-router/releases/tag/v7.6.0)
 
 - feature: the `canLeaveState` function now gets passed a second argument with the name+parameters of the state that the user is trying to navigate to
