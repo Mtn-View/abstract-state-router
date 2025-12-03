@@ -76,26 +76,27 @@ export default function makeRendererWrapper(ractiveOptions, svelteOptions) {
 Here's how you'd use the above renderer wrapper in your app.
 
 ```js
+import makeStateRouter from 'abstract-state-router'
 import SvelteComponent from './SvelteComponent.svelte'
+import makeRenderer from './ractive-svelte-state-renderer-wrapper.js'
 
-export default function (stateRouter) {
-	stateRouter.addState({
-		name: 'app.a',
-		route: 'a',
-		template: {
-			svelte: true,
-			component: SvelteComponent,
-		},
-		// ...
-	})
+const stateRouter = makeStateRouter(makeRenderer(), document.querySelector('body'))
 
-	stateRouter.addState({
-		name: 'app.b',
-		route: 'b',
-		template: {
-			template: '<h1>This is a Ractive state!</h1>',
-		},
-		// ...
-	})
-}
+stateRouter.addState({
+	name: 'app.a',
+	route: 'a',
+	template: {
+		svelte: true,
+		component: SvelteComponent,
+	},
+	// ...
+})
+stateRouter.addState({
+	name: 'app.b',
+	route: 'b',
+	template: {
+		template: '<h1>This is a Ractive state!</h1>',
+	},
+	// ...
+})
 ```
