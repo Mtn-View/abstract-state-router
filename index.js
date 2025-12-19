@@ -19,7 +19,7 @@ const getProperty = name => obj => obj[name]
 const reverse = ary => ary.slice().reverse()
 const isFunction = property => obj => typeof obj[property] === `function`
 
-const expectedPropertiesOfAddState = [ `name`, `route`, `defaultChild`, `data`, `template`, `resolve`, `activate`, `querystringParameters`, `defaultQuerystringParameters`, `defaultParameters`, `canLeaveState` ]
+const expectedPropertiesOfAddState = [ `name`, `route`, `defaultChild`, `data`, `template`, `resolve`, `activate`, `querystringParameters`, `defaultParameters`, `canLeaveState` ]
 
 export default function StateProvider(makeRenderer, rootElement, stateRouterOptions = {}) {
 	const prototypalStateHolder = StateState()
@@ -224,10 +224,10 @@ export default function StateProvider(makeRenderer, rootElement, stateRouterOpti
 		router.add(route, parameters => onRouteChange(state, parameters))
 	}
 
-	function computeDefaultParams(defaultParams) {
+	function computeDefaultParams(defaultParams, parameters) {
 		const computedDefaultParams = {}
 
-		Object.keys(defaultParams).forEach(key => {
+		parameters.forEach(key => {
 			computedDefaultParams[key] = typeof defaultParams[key] === `function` ? defaultParams[key]() : defaultParams[key]
 		})
 
@@ -261,11 +261,13 @@ export default function StateProvider(makeRenderer, rootElement, stateRouterOpti
 			await prototypalStateHolder.guaranteeAllStatesExist(newStateName)
 
 			const state = prototypalStateHolder.get(newStateName)
-			const defaultParams = state.defaultParameters || state.defaultQuerystringParameters || {}
-			const needToApplyDefaults = Object.keys(defaultParams).some(param => typeof parameters[param] === 'undefined')
+			const defaultParams = prototypalStateHolder.getHierarchy(newStateName).reduce((acc, state) => {
+				return { ...acc, ...state.defaultParameters }
+			}, {})
+			const parametersThatNeedDefaultsApplied = Object.keys(defaultParams).filter(param => typeof parameters[param] === 'undefined')
 
-			if (needToApplyDefaults) {
-				throw redirector(newStateName, { ...computeDefaultParams(defaultParams), ...parameters })
+			if (parametersThatNeedDefaultsApplied.length > 0) {
+				throw redirector(newStateName, { ...parameters, ...computeDefaultParams(defaultParams, parametersThatNeedDefaultsApplied) })
 			}
 
 			await ifNotCancelled(() => {
@@ -366,9 +368,9 @@ export default function StateProvider(makeRenderer, rootElement, stateRouterOpti
 		const destinationStateName = stateName === null ? getGuaranteedPreviousState().name : stateName
 
 		const destinationState = prototypalStateHolder.get(destinationStateName) || {}
-		const defaultParams = destinationState.defaultParameters || destinationState.defaultQuerystringParameters || {}
+		const defaultParams = destinationState.defaultParameters || {}
 
-		parameters = { ...computeDefaultParams(defaultParams), ...parameters }
+		parameters = { ...computeDefaultParams(defaultParams, Object.keys(defaultParams)), ...parameters }
 
 		prototypalStateHolder.guaranteeAllStatesExist(destinationStateName)
 		const route = prototypalStateHolder.buildFullStateRoute(destinationStateName)

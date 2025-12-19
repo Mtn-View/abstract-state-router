@@ -1,4 +1,26 @@
-# [8.0.0](https://github.com/TehShrike/abstract-state-router/releases/tag/v8.8.0)
+# [8.0.4](https://github.com/TehShrike/abstract-state-router/releases/tag/v8.0.4)
+
+- Export a `Redirect` type that you can throw from your `resolve` functions [#170](https://github.com/TehShrike/abstract-state-router/pull/170)
+
+# [8.0.3](https://github.com/TehShrike/abstract-state-router/releases/tag/v8.0.3)
+
+- Update the types to reflect the fact that the `resolve` function doesn't get passed a callback function with a `redirect` property as of 8.0.0 [`7205e17`](https://github.com/TehShrike/abstract-state-router/commit/7205e1798832c7794d5c5f3b6e95b49fe3ec06f0)
+
+# [8.0.2](https://github.com/TehShrike/abstract-state-router/releases/tag/v8.0.2)
+
+- fix a bug where default parameters from parent states were being ignored [#169](https://github.com/TehShrike/abstract-state-router/pull/169)
+	- if you navigated to state1.child2.grandchild3, the only default parameters being used were the ones on grandchild3
+- remove support for `defaultQuerystringParameters` in state definitions [#168](https://github.com/TehShrike/abstract-state-router/pull/168)
+	- technically this should be a breaking change, and I wish we'd remembered to do it during the 8.0.0 release, but I don't feel too bad about doing it now because
+		- it was deprecated 8 years ago
+		- the type definition doesn't include it, so anyone using TS is already guaranteed to not be using it
+		- anyone continuing to use it will get a runtime warning in their console about it
+
+# [8.0.1](https://github.com/TehShrike/abstract-state-router/releases/tag/v8.0.1)
+
+- Fix: pass the correct state name into `getDomChild` [#167](https://github.com/TehShrike/abstract-state-router/pull/167)
+
+# [8.0.0](https://github.com/TehShrike/abstract-state-router/releases/tag/v8.0.0)
 
 - drop callbacks, everything is promises now [#162](https://github.com/TehShrike/abstract-state-router/pull/162)
 - drop CJS, use ESM everywhere [#166](https://github.com/TehShrike/abstract-state-router/pull/166)
@@ -39,7 +61,7 @@ Fixes an issue where when a state was destroyed and resolved during the same sta
 
 # [7.3.0](https://github.com/TehShrike/abstract-state-router/releases/tag/v7.3.0)
 
-Removes the concept of resetting states.
+Removes the concept of resetting states.  [#152](https://github.com/TehShrike/abstract-state-router/pull/152)
 
 The concept of resetting breaks down if your component library doesn't support
 - slots
@@ -49,7 +71,7 @@ For renderers that "reset" states by destroying the existing component and re-co
 
 Existing renderers don't need to change to work with this version of ASR, it's just that their `reset` function won't get called any more.
 
-The `beforeResetState` and `afterResetState` should not be fired any more.
+The `beforeResetState` and `afterResetState` events should not be fired any more.
 
 # [7.2.0](https://github.com/TehShrike/abstract-state-router/releases/tag/v7.2.0)
 
