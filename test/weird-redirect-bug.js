@@ -4,6 +4,7 @@ import getTestState from './helpers/test-state-factory.js'
 
 test(`Weird redirect bug?`, async t => {
 	let activated = false
+		let resolves = 0
 
 	function startTest(t) {
 		const state = getTestState(t)
@@ -45,6 +46,7 @@ test(`Weird redirect bug?`, async t => {
 			},
 			template: {},
 			async resolve(data, params) {
+				resolves++
 				console.log('resolve start', params)
 
 				return await loadData(params)
@@ -55,11 +57,9 @@ test(`Weird redirect bug?`, async t => {
 					return
 				}
 				console.log('activate', parameters, 'redirected?', redirected)
-
 				// After we redirect, these should be our parameters
 				// However, in my testing, we never get here! It never activates after we redirect in the resolve!
 				assert.ok(parameters.id == 1 && content.id == 1 && parameters.otherId == 2, 'State should activate once we set id = 1 and otherId = 2 by redirecting')
-
 				if (parameters.id == 1 && parameters.otherId == 2) {
 					activated = true
 				}
@@ -81,6 +81,8 @@ test(`Weird redirect bug?`, async t => {
 				}
 
 				if (parameters.id == 1 && parameters.otherId == 2) {
+				assert.ok(resolves === 3, 'Should resolve three times!')
+
 					assert.ok(activated, 'Not activated!')
 					console.log('ending test')
 					resolve()
