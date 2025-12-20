@@ -15,14 +15,13 @@ test(`Weird redirect bug?`, async t => {
 		// After we get the "id" using "otherId", we redirect to put "id" in the URL
 		async function loadData(params) {
 			// Mock loading "id" with "otherId"
-			const { id } = await new Promise(resolve => setTimeout(() => resolve({ id: 1 }), 1))
+			const id = await Promise.resolve(1)
 			if (params.id != 1) {
 				redirected = true
 				// This should set id = 1 and keep otherId = 2
-				console.log('redirecting', {
+				console.log('redirecting - should be a third state change, but it never calls resolve', {
 					id,
 					otherId: params.otherId,
-					// otherOtherId: undefined,
 				})
 				return Promise.reject({
 					redirectTo: {
@@ -30,7 +29,6 @@ test(`Weird redirect bug?`, async t => {
 						params: {
 							id,
 							otherId: params.otherId,
-							// otherOtherId: undefined,
 						},
 					},
 				})
@@ -41,10 +39,9 @@ test(`Weird redirect bug?`, async t => {
 		stateRouter.addState({
 			name: `state`,
 			route: `/state/:id`,
-			querystringParameters: ['id'],
+			// querystringParameters: ['id'],
 			defaultParameters: {
 				id: null,
-				d: 'efault',
 			},
 			template: {},
 			async resolve(data, params) {
