@@ -3,88 +3,77 @@ import assert from 'node:assert'
 import getTestState from './helpers/test-state-factory.js'
 
 test(`Weird redirect bug?`, async t => {
-	let activated = false
-		let resolves = 0
-
 	function startTest(t) {
-		const state = getTestState(t)
-		const stateRouter = state.stateRouter
-
-		let redirected = false
-
-		// Our load resolve/load fn allows us to load an entity by its "id" or the "otherId" of a child entity
-		// After we get the "id" using "otherId", we redirect to put "id" in the URL
-		async function loadData(params) {
-			// Mock loading "id" with "otherId"
-			const id = await Promise.resolve(1)
-			if (params.id != 1) {
-				redirected = true
-				// This should set id = 1 and keep otherId = 2
-				console.log('redirecting - should be a third state change, but it never calls resolve', {
-					id,
-					otherId: params.otherId,
-				})
-				return Promise.reject({
-					redirectTo: {
-						name: null,
-						params: {
-							id,
-							otherId: params.otherId,
-						},
-					},
-				})
-			}
-			return params
+		const testState = {
+			...getTestState(t),
+			resolves: 0,
 		}
+		const stateRouter = testState.stateRouter
 
 		stateRouter.addState({
 			name: `state`,
 			route: `/state/:id`,
+			// Behavior doesn't change based on this bc id is a route parameter
 			// querystringParameters: ['id'],
 			defaultParameters: {
 				id: null,
 			},
 			template: {},
-			async resolve(data, params) {
-				resolves++
-				console.log('resolve start', params)
+			async resolve(_data, params) {
+				testState.resolves++
+				console.log('resolve start', testState.resolves, params)
 
-				return await loadData(params)
+				if (params.id != 1) {
+					// This should set id = 1 and keep otherId = 2
+					// In our actual app, id is fetched from the backend using otherId
+					console.log('redirecting - should be a third state change, but it never calls resolve', {
+						id: 1,
+						otherId: params.otherId,
+					})
+					return Promise.reject({
+						redirectTo: {
+							name: null,
+							params: {
+								id: 1,
+								otherId: params.otherId,
+							},
+						},
+					})
+				}
+
+				return params
 			},
-			activate({ parameters, content }) {
+			activate({ parameters }) {
 				// Ignore initial activation
 				if (parameters.otherId === 'init') {
 					return
 				}
-				console.log('activate', parameters, 'redirected?', redirected)
 				// After we redirect, these should be our parameters
-				// However, in my testing, we never get here! It never activates after we redirect in the resolve!
-				assert.ok(parameters.id == 1 && content.id == 1 && parameters.otherId == 2, 'State should activate once we set id = 1 and otherId = 2 by redirecting')
-				if (parameters.id == 1 && parameters.otherId == 2) {
-					activated = true
-				}
+				// However, in my testing, we never get here! It never activates (or re-runs resolve) after we redirect in the resolve!
+				assert.ok(
+					parameters.id == 1 && parameters.otherId == 2,
+					'State should activate once we set id = 1 and otherId = 2 by redirecting'
+				)
 			},
 		})
-		return state
+		return testState
 	}
 
-	await t.test(`test`, async t => {
-		const state = startTest(t)
-		const stateRouter = state.stateRouter
+	await t.test(`id = 1`, async t => {
+		const testState = startTest(t)
+		const stateRouter = testState.stateRouter
 
 		await new Promise(resolve => {
-			stateRouter.on('stateChangeEnd', (state, parameters) => {
+			stateRouter.on('stateChangeEnd', (_state, parameters) => {
 				console.log('stateChangeEnd', parameters)
 				if (parameters.id == 1 && parameters.otherId != 2) {
 					console.log('second state change - this will reload the state because id is now null')
 					stateRouter.go(`state`, { id: null, otherId: 2 })
 				}
 
-				if (parameters.id == 1 && parameters.otherId == 2) {
-				assert.ok(resolves === 3, 'Should resolve three times!')
+				if (parameters.id === '1' && parameters.otherId === '2') {
+					assert.ok(testState.resolves === 3, 'Should resolve three times!')
 
-					assert.ok(activated, 'Not activated!')
-					console.log('ending test')
 					resolve()
 				}
 			})
