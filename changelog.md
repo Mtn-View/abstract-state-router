@@ -1,3 +1,7 @@
+# [8.0.6](https://github.com/TehShrike/abstract-state-router/releases/tag/v8.0.6)
+
+- well that didn't take long to regret.  The type definition file now exports all the types
+
 # [8.0.5](https://github.com/TehShrike/abstract-state-router/releases/tag/v8.0.5)
 
 - added `once` and `removeEventListener` to the type definition

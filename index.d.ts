@@ -1,9 +1,6 @@
 declare module 'abstract-state-router' {
-	type DefaultParams = {
+	export type DefaultParams = {
 		[key: string]: string | null | (() => string | null)
-	}
-	type StateParams = {
-		[key: string]: string | null
 	}
 	export type State<TEMPLATE, DOM_API> = {
 		template: TEMPLATE
@@ -18,29 +15,29 @@ declare module 'abstract-state-router' {
 		canLeaveState?: undefined | ((domApi: DOM_API) => boolean)
 	}
 
-	type ErrorEvent = 'stateChangeCancelled' | 'stateChangeError' | 'stateError'
+	export type ErrorEvent = 'stateChangeCancelled' | 'stateChangeError' | 'stateError'
 
-	type StateChangeEvent = 'stateChangeStart' | 'stateChangeEnd'
+	export type StateChangeEvent = 'stateChangeStart' | 'stateChangeEnd'
 
-	type GoOptions = {
+	export type GoOptions = {
 		replace?: boolean
 		inherit?: boolean
 	}
 
-	type ErrorEventCallback = (err: Error) => void
-	type StateChangeEventCallback<TEMPLATE, DOM_API> = (
+	export type ErrorEventCallback = (err: Error) => void
+	export type StateChangeEventCallback<TEMPLATE, DOM_API> = (
 		state: State<TEMPLATE, DOM_API>,
 		parameters: object,
 		states: State<TEMPLATE, DOM_API>[],
 	) => void
-	type RouteNotFoundCallback = (route: string, parameters: object) => void
-	type AfterCreateStateCallback<TEMPLATE, DOM_API> = (args: {
+	export type RouteNotFoundCallback = (route: string, parameters: object) => void
+	export type AfterCreateStateCallback<TEMPLATE, DOM_API> = (args: {
 		state: State<TEMPLATE, DOM_API>
 		domApi: DOM_API
 		content: unknown
 		parameters: object
 	}) => void
-	type StateChangePreventedCallback = (stateName: string) => void
+	export type StateChangePreventedCallback = (stateName: string) => void
 
 	export type AbstractStateRouter<TEMPLATE, DOM_API> = {
 		addState(options: State<TEMPLATE, DOM_API>): void
@@ -66,7 +63,7 @@ declare module 'abstract-state-router' {
 		removeListener(event: 'stateChangePrevented', callback: StateChangePreventedCallback): void
 	}
 
-	type RenderContext<TEMPLATE> = {
+	export type RenderContext<TEMPLATE> = {
 		template: TEMPLATE
 		element: Element
 		content: unknown
