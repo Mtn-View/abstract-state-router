@@ -369,11 +369,6 @@ If I use the abstract-state-router on an app where I want to support clients wit
 
 If anyone else has need of this functionality and wants to get keep making progress on it, I'd be happy to help.  Stop by the [chat room](https://discord.gg/G8FrErC) to ask any questions.
 
-# Maintainers
-
-- [TehShrike](https://github.com/TehShrike)
-- [ArtskydJ](https://github.com/ArtskydJ)
-
 # License
 
 [WTFPL](http://wtfpl2.com)
