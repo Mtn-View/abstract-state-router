@@ -62,6 +62,10 @@ export default function StateProvider(makeRenderer, rootElement, stateRouterOpti
 	}
 
 	async function destroyStateName(stateName) {
+		if(!(stateName in activeEmitters)) {
+			return
+		}
+
 		const state = prototypalStateHolder.get(stateName)
 		stateProviderEmitter.emit(`beforeDestroyState`, {
 			state,
